@@ -7,29 +7,28 @@
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 
-$this->title = 'Signup';
-$this->params['breadcrumbs'][] = $this->title;
+$this->title = 'Регистрация';
 ?>
-<div class="site-signup">
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <p>Please fill out the following fields to signup:</p>
-
+<div class="card card-container">
+    <h2 class="text-center"><?=$this->title?></h2>
+    <?php $form = ActiveForm::begin([
+        'id'            =>  'form-signup',
+        'options'       =>  [
+            'class'         =>  'form-signin',
+        ]
+    ])?>
+    <span id="reauth-email" class="reauth-email"></span>
+    <?=$form->field($model, 'username')->textInput(['autofocus' => true, 'placeholder' => $model->getAttributeLabel('username')])->label(false)?>
+    <?=$form->field($model, 'email')->textInput(['placeholder' => $model->getAttributeLabel('email')])->label(false)?>
+    <?=$form->field($model, 'password')->passwordInput(['placeholder' => $model->getAttributeLabel('password')])->label(false)?>
+    <?=Html::button('Создать аккаунт', ['type' => 'submit', 'class' => 'btn btn-lg btn-primary btn-block btn-signin'])?>
+    <?php $form->end(); ?>
     <div class="row">
-        <div class="col-lg-5">
-            <?php $form = ActiveForm::begin(['id' => 'form-signup']); ?>
-
-                <?= $form->field($model, 'username')->textInput(['autofocus' => true]) ?>
-
-                <?= $form->field($model, 'email') ?>
-
-                <?= $form->field($model, 'password')->passwordInput() ?>
-
-                <div class="form-group">
-                    <?= Html::submitButton('Signup', ['class' => 'btn btn-primary', 'name' => 'signup-button']) ?>
-                </div>
-
-            <?php ActiveForm::end(); ?>
+        <div class="col-xs-6">
+            <?=Html::a('Войти', ['site/login'], ['class' => 'forgot-password'])?>
+        </div>
+        <div class="col-xs-6 text-right">
+            <?=Html::a('Забыли пароль?', ['site/request-password-reset'], ['class' => 'forgot-password'])?>
         </div>
     </div>
 </div>

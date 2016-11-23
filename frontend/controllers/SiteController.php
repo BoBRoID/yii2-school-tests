@@ -3,6 +3,7 @@ namespace frontend\controllers;
 
 use Yii;
 use yii\base\InvalidParamException;
+use yii\helpers\Html;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
@@ -26,15 +27,15 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'signup'],
+                //'only' => ['logout', 'signup'],
                 'rules' => [
                     [
-                        'actions' => ['signup'],
+                        'actions' => ['signup', 'login', 'request-password-reset', 'reset-password'],
                         'allow' => true,
                         'roles' => ['?'],
                     ],
                     [
-                        'actions' => ['logout'],
+                        //'actions' => ['logout'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -82,6 +83,8 @@ class SiteController extends Controller
      */
     public function actionLogin()
     {
+        $this->layout = 'clean';
+
         if (!Yii::$app->user->isGuest) {
             return $this->goHome();
         }
@@ -148,6 +151,7 @@ class SiteController extends Controller
      */
     public function actionSignup()
     {
+        $this->layout = 'clean';
         $model = new SignupForm();
         if ($model->load(Yii::$app->request->post())) {
             if ($user = $model->signup()) {
@@ -169,14 +173,15 @@ class SiteController extends Controller
      */
     public function actionRequestPasswordReset()
     {
+        $this->layout = 'clean';
         $model = new PasswordResetRequestForm();
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             if ($model->sendEmail()) {
-                Yii::$app->session->setFlash('success', 'Check your email for further instructions.');
+                Yii::$app->session->setFlash('success', 'На почтовый ящик '.Html::tag('b', $model->email).' отправлены дальнейшие указания для восстановления пароля');
 
                 return $this->goHome();
             } else {
-                Yii::$app->session->setFlash('error', 'Sorry, we are unable to reset password for email provided.');
+                Yii::$app->session->setFlash('error', 'Введеный вами адрес не зарегистрирован в системе!');
             }
         }
 
@@ -194,6 +199,8 @@ class SiteController extends Controller
      */
     public function actionResetPassword($token)
     {
+        $this->layout = 'clean';
+
         try {
             $model = new ResetPasswordForm($token);
         } catch (InvalidParamException $e) {
